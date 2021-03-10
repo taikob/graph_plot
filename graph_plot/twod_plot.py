@@ -1,7 +1,4 @@
 import sys, os, csv, argparse
-from data_prcs import get as g
-from color import convert as c
-import data_processing as d
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -12,16 +9,14 @@ def plot(configpath):
     sys.path.append(os.getcwd()+'/config')
     exec('import ' + configpath + ' as p')
 
-    print(p.dataname)
     data=np.loadtxt(p.dataname)
+    ext=os.path.splitext(os.path.basename(p.dataname))[-1]
 
-    print(data[:,1:3])
-
-    fig = plt.figure(figsize=(10, 10))
-    plt.imshow(data[:,1:3])
-    plt.title("Plot 2D array")
-    plt.colorbar()
-    plt.show()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(data,aspect='auto', extent=[p.ymin,p.ymax,p.xmax,p.xmin])
+    plt.colorbar(cax)
+    plt.savefig(p.dataname.replace(ext,'.png'), transparent=True, bbox_inches='tight')
 
 
 if __name__== "__main__":
