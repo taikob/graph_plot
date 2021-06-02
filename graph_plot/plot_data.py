@@ -138,8 +138,11 @@ def plot(configpath):
                     if nump[p.znum] == 2 and yn == 1:
                         plt.plot(xdata, ydata[:, yn], '--', label=lb, color='black',dashes=[2,1], linewidth=1, markersize=3)
                     else:
-                        if yn==0:
-                            plt.plot(xdata, ydata[:, yn], '--', label=lb, color='black', linewidth=2, markersize=mksize)
+                        if hasattr(p, 'dashline'):
+                            if yn==0:
+                                plt.plot(xdata, ydata[:, yn], '--', label=lb, color='black', linewidth=lnsize+1, markersize=mksize)
+                            else:
+                                plt.plot(xdata, ydata[:, yn], gl, label=lb, color=cl, linewidth=lnsize, markersize=mksize)
                         else:
                             plt.plot(xdata, ydata[:, yn], gl, label=lb, color=cl, linewidth=lnsize, markersize=mksize)
                 else:
