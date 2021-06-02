@@ -1,6 +1,6 @@
 import numpy as np
 
-dataname='dist_fb_reshape.csv'
+dataname='dist_fb_reshape+.csv'
 paramrow=range(0,2)
 xnum=1
 ynum=2
@@ -25,8 +25,18 @@ Hfnum=znum
 Hlnum=xnum
 ofnum=ynum
 x_change=0
-xlm=[0.01,0.995]#xlim
-xtc=np.arange(0.01,0.995,0.005)#xticks
-ylm=[0,0.06]#xlim
+xlm=[0.01,5]#xlim
+ylm=[0,0.05]#xlim
+ymal=0.01
+ymil=0.005
 xlog=1
 ylog=None
+fntsize=10
+hsize=2.0
+vsize=2.0
+gl='-'
+lnsize=1
+
+xtitle='Absolute Value of Motion Vector'
+ytitle='Frequency Rate'
+nogrid=1
