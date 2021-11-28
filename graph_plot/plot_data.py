@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import datetime
 
-def plot(configpath=None,dataname=None,dirname=None,fixparam=None, xline=None,yline=None):
+def plot(configpath=None,dataname=None,rename=None,fixparam=None, xline=None,yline=None):
     if configpath is None or configpath is '':
         print('Please set config file!')
         import set_config as sc
@@ -211,16 +211,16 @@ def plot(configpath=None,dataname=None,dirname=None,fixparam=None, xline=None,yl
 
         d.save_graph_data(tt + '_graph.csv', data, sysparam, p.xnum, p.znum, p.lnum)
 
-        if dirname==None and hasattr(p, 'dirname'):
-            dirname=p.dirname
-        elif dirname==None and not hasattr(p, 'dirname'):
-            dirname=datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        os.mkdir(dirname)
-        os.rename(tt + '_graph.csv' ,dirname+'/'+tt + '_graph.csv')
-        os.rename(tt + '_output.pdf',dirname+'/'+tt + '_output.pdf')
+        if rename==None and hasattr(p, 'rename'):
+            rename=p.rename
+        elif rename==None and not hasattr(p, 'rename'):
+            rename=datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        os.mkdir(rename)
+        os.rename(tt + '_graph.csv' ,rename+'_'+tt + '_graph.csv')
+        os.rename(tt + '_output.pdf',rename+'_'+tt + '_output.pdf')
         if os.path.exists(tt + '_legend.pdf'):
-            os.rename(tt + '_legend.pdf',dirname+'/'+tt + '_legend.pdf')
-        shutil.copyfile('config/'+configpath+'.py', dirname + '/' + configpath + '.py')
+            os.rename(tt + '_legend.pdf',rename+'_'+tt + '_legend.pdf')
+        shutil.copyfile('config/'+configpath+'.py', configpath + '_' + rename + '.py')
 
 if __name__== "__main__":
     parser = argparse.ArgumentParser(description='plot_data')
