@@ -215,7 +215,8 @@ def plot(configpath=None,dataname=None,rename=None,fixparam=None, xline=None,yli
             rename=p.rename
         elif rename==None and not hasattr(p, 'rename'):
             rename=datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        os.mkdir(rename)
+        if not os.path.exists('graph'):
+            os.mkdir('graph')
         os.rename(tt + '_graph.csv' ,rename+'_'+tt + '_graph.csv')
         os.rename(tt + '_output.pdf',rename+'_'+tt + '_output.pdf')
         if os.path.exists(tt + '_legend.pdf'):
