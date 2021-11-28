@@ -1,13 +1,32 @@
-import sys, os, csv, argparse
+import sys, os, csv, argparse, shutil
 from data_prcs import get as g
 from color import convert as c
 import data_processing as d
 import matplotlib.pyplot as plt
 import numpy as np
+import datetime
 
-def plot(configpath):
+def plot(configpath=None,dataname=None,dirname=None,fixparam=None, xline=None,yline=None):
+    if configpath is None or configpath is '':
+        print('Please set config file!')
+        import set_config as sc
+        sc.main()
+        sys.exit()
+    elif not os.path.exists('config/'+configpath+'.py'):
+        print('config file is not here! ', 'config/'+configpath+'.py')
+        sys.exit()
+
     sys.path.append(os.getcwd()+'/config')
     exec('import ' + configpath + ' as p')
+
+    #param
+    if xline == None:
+        if hasattr(p, 'xline'):
+            xline = p.xline
+    if yline == None:
+        if hasattr(p, 'yline'):
+            yline = p.yline
+
 
     tt="x"+str(p.xnum)+"_y"+str(p.ynum)
     if p.lnum is not None and p.ap==1:
@@ -16,7 +35,9 @@ def plot(configpath):
     if   p.addt is not None: tt+=p.addt
 
     #prepare graph data
-    with open(p.dataname) as f:
+    if dataname == None:
+        dataname = p.dataname
+    with open(dataname) as f:
         reader = csv.reader(f)
         data = [row for row in reader]
 
@@ -24,12 +45,12 @@ def plot(configpath):
         data=d.dataexcept(data, p.exceptnum, p.exceptval, p.exceptreq, p.ynum)
 
     if p.fixparam is not None:
-        data=d.datafilter(data, p.fixparam)
+        fixparam = p.fixparam
+    if fixparam != None:
+        data=d.datafilter(data, fixparam)
 
     sysparam, nump=g.get_sysparam(data,p.paramrow)
     data=d.make_graphdata(data,sysparam,nump,p.xnum,p.ynum,p.znum,p.lnum)
-    print(sysparam)
-    print(nump)
 
     if p.xmin is not None or p.xmax is not None:
         data, sysparam, nump = d.rangelimit(data, sysparam, nump, p.xnum, p.xmin, p.xmax,0)
@@ -44,10 +65,18 @@ def plot(configpath):
     plt.rcParams['ytick.major.width'] = 0.5
     plt.rcParams['xtick.minor.width'] = 0.5
     plt.rcParams['ytick.minor.width'] = 0.5
+    plt.rcParams["xtick.direction"] = "in"
+    plt.rcParams["ytick.direction"] = "in"
+    plt.rcParams["xtick.top"] = True
+    plt.rcParams["ytick.right"] = True
+
     if hasattr(p, 'fntsize'):
         plt.rcParams["font.size"] = p.fntsize
     if p.lnum is not None and p.ap==1:
-        fig = plt.figure(figsize=(6,4))
+        if hasattr(p, 'lineplot'):
+            fig = plt.figure(figsize=(0.1*float(len(sysparam[p.xnum])),16))
+        else:
+            fig = plt.figure(figsize=(6,4))
         pltt=  range(nump[p.lnum])# plot table
         pltn=[0]
         if hasattr(p, 'xtitle') and hasattr(p, 'ytitle'):
@@ -59,11 +88,25 @@ def plot(configpath):
             pltn = range(nump[p.lnum])
             tmptt=tt
 
+    if type(xline) != list:
+        tmp=xline
+        xline=[]
+        for n in pltt:
+            xline.append(tmp)
+    if type(yline) != list:
+        tmp=yline
+        yline=[]
+        for n in pltt:
+            yline.append(tmp)
+
     for n in pltn:
         if p.lnum is None or p.ap==0: pltt = [n]
         for l in pltt:
             if p.lnum is not None and p.ap==1:
-                plt.subplot(5, 3, l+1)
+                if hasattr(p, 'lineplot'):
+                    plt.subplot(len(pltt), 1, l+1)
+                else:
+                    plt.subplot(5, 3, l+1)
             else:
                 if hasattr(p, 'hsize') and hasattr(p, 'vsize'):
                     fig = plt.figure(figsize=(p.hsize, p.vsize))
@@ -90,10 +133,10 @@ def plot(configpath):
                 plt.gca().yaxis.set_major_locator(plt.MultipleLocator(p.ymal))
             if hasattr(p, 'ymil'):
                 plt.gca().yaxis.set_minor_locator(plt.MultipleLocator(p.ymil))
-            if hasattr(p, 'xline'):
-                plt.hlines([p.xline], p.xlm[0], p.xlm[1], "black", linewidth=0.7)  # hlines
-            if hasattr(p, 'yline'):
-                plt.vlines([p.yline], p.ylm[0], p.ylm[1], "black", linewidth=0.7)  # hlines
+            if xline is not None:
+                plt.hlines([xline[l]], p.xlm[0], p.xlm[1], "black", linewidth=0.7)  # hlines
+            if yline is not None:
+                plt.vlines([yline[l]], p.ylm[0], p.ylm[1], "black", linewidth=0.7)  # hlines
             if hasattr(p, 'mksize'): mksize=p.mksize
             else: mksize=3
             if hasattr(p, 'lnsize'): lnsize=p.lnsize
@@ -103,14 +146,12 @@ def plot(configpath):
             #plt.xticks(color="None")
             #plt.yticks(color="None")
 
-
-
             if p.lnum is not None and p.ap==1:
-                #if p.tc==1:1
-                #  plt.title(str(sysparam[p.lnum][l]),color=c.get_colorcode(int(sysparam[p.lnum][l])))
-                #else:
-                #  plt.title(str(sysparam[p.lnum][l]))
-                print('skip title')
+                if p.tc==1:
+                    plt.title(str(sysparam[p.lnum][l]),color=c.get_colorcode(int(sysparam[p.lnum][l])))
+                else:
+                    #plt.title(str(sysparam[p.lnum][l]),x=0.5,y=0.9)
+                    print('skip title')
             else:
                 lb=None
                 cl='black'
@@ -127,7 +168,12 @@ def plot(configpath):
                     else:
                         cl = c.get_colorcode(int(360/data.shape[1]*yn))
                 elif hasattr(p, 'cl'):
-                    cl=c.get_colorcode(int(p.cl))
+                    lb=str(sysparam[p.znum][yn])
+                    if p.cl is not None:
+                        cl=c.get_colorcode(int(p.cl))
+                else:
+                    lb=None
+                    cl='black'
 
                 xdata=sysparam[p.xnum]
 
@@ -136,7 +182,8 @@ def plot(configpath):
 
                 if p.znum is not None:
                     if nump[p.znum] == 2 and yn == 1:
-                        plt.plot(xdata, ydata[:, yn], '--', label=lb, color='black',dashes=[2,1], linewidth=1, markersize=3)
+                        #plt.plot(xdata, ydata[:, yn], '--', label=lb, color='black',dashes=[2,1], linewidth=1, markersize=3)
+                        plt.plot(xdata, ydata[:, yn], '-o', label=lb, color='red', linewidth=1, markersize=3)
                     else:
                         if hasattr(p, 'dashline'):
                             if yn==0:
@@ -146,25 +193,38 @@ def plot(configpath):
                         else:
                             plt.plot(xdata, ydata[:, yn], gl, label=lb, color=cl, linewidth=lnsize, markersize=mksize)
                 else:
-                    plt.plot(xdata, ydata[:, yn], gl, label=lb, color=cl, linewidth=lnsize, markersize=mksize)
+                    plt.plot(xdata, ydata[:, yn], gl, label=lb, color=cl, linewidth=lnsize, markersize=mksize, mec='k', mew=0.5)
 
         if hasattr(p, 'fitdata'):
-            fitdata=np.loadtxt(p.fitdata, delimiter=',')
-            plt.plot(fitdata[:,0], fitdata[:,1], ls='--', color='black',dashes=[2,1] , linewidth=1)
+            if p.fitdata is not None:
+                fitdata=np.loadtxt(p.fitdata, delimiter=',')
+                plt.plot(fitdata[:,0], fitdata[:,1], ls='--', color='black',dashes=[2,1] , linewidth=1)
 
+
+        # save files
         if p.lnum is not None and p.ap==0:tt=tmptt+"_l"+str(n)
         fig.savefig(tt+'_output.pdf',transparent = True, bbox_inches='tight')
         if lb is not None:
             plt.legend().get_frame().set_alpha(1)
-            fig.savefig(tt+"_legend.png",transparent = True, bbox_inches='tight')
+            fig.savefig(tt+"_legend.pdf",transparent = True, bbox_inches='tight')
         plt.close()
 
         d.save_graph_data(tt + '_graph.csv', data, sysparam, p.xnum, p.znum, p.lnum)
+
+        if dirname==None and hasattr(p, 'dirname'):
+            dirname=p.dirname
+        elif dirname==None and not hasattr(p, 'dirname'):
+            dirname=datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        os.mkdir(dirname)
+        os.rename(tt + '_graph.csv' ,dirname+'/'+tt + '_graph.csv')
+        os.rename(tt + '_output.pdf',dirname+'/'+tt + '_output.pdf')
+        if os.path.exists(tt + '_legend.pdf'):
+            os.rename(tt + '_legend.pdf',dirname+'/'+tt + '_legend.pdf')
+        shutil.copyfile('config/'+configpath+'.py', dirname + '/' + configpath + '.py')
 
 if __name__== "__main__":
     parser = argparse.ArgumentParser(description='plot_data')
     parser.add_argument('--path', '-p', default='', type=str, help='config')
     parser.set_defaults(test=False)
     args = parser.parse_args()
-
     plot(args.path)

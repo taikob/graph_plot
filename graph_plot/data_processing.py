@@ -25,16 +25,20 @@ def dataexcept(data, exceptnum, exceptval, exceptreq, ynum):
 
 def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum,fixparam=None):
 
-    if lnum is not None:
-        aldata=np.ndarray([nump[xnum],nump[znum],nump[lnum]])
+    if lnum is not None and znum is None:
+        aldata=np.zeros([nump[xnum],1,nump[lnum]])
+        lpara=sysparam[lnum]
+        zpara=[0]
+    elif lnum is not None:
+        aldata=np.zeros([nump[xnum],nump[znum],nump[lnum]])
         lpara=sysparam[lnum]
         zpara=sysparam[znum]
     elif znum is not None:
-        aldata=np.ndarray([nump[xnum],nump[znum], 1])
+        aldata=np.zeros([nump[xnum],nump[znum], 1])
         lpara=[0]
         zpara=sysparam[znum]
     else:
-        aldata=np.ndarray([nump[xnum],1,1])
+        aldata=np.zeros([nump[xnum],1,1])
         lpara=[0]
         zpara=[0]
 
@@ -93,7 +97,9 @@ def save_graph_data(title,data,sysparam,xnum,znum,lnum):
 
     tmpd=data.copy()#tmpdata
 
-    if   znum==None:
+    if znum==None and lnum!=None:
+        pdata=np.empty((tmpd.shape[0]* tmpd.shape[1]*tmpd.shape[2],3))
+    elif znum==None:
         pdata=np.empty((tmpd.shape[0]* tmpd.shape[1]*tmpd.shape[2],1))
     elif lnum==None:
         pdata=np.empty((tmpd.shape[0]* tmpd.shape[1]*tmpd.shape[2],2))
@@ -110,6 +116,8 @@ def save_graph_data(title,data,sysparam,xnum,znum,lnum):
                 pdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 1] = zdata[z]
             if lnum is not None:
                 pdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 2] = ldata[l]
+            if lnum is not None and znum is None:
+                pdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 1] = 0
 
             nz+=1
 
