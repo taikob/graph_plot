@@ -217,11 +217,11 @@ def plot(configpath=None,dataname=None,rename=None,fixparam=None, xline=None,yli
             rename=datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         if not os.path.exists('graph'):
             os.mkdir('graph')
-        os.rename(tt + '_graph.csv' ,rename+'_'+tt + '_graph.csv')
-        os.rename(tt + '_output.pdf',rename+'_'+tt + '_output.pdf')
+        os.rename(tt + '_graph.csv' ,'graph/'+rename+'_'+tt + '_graph.csv')
+        os.rename(tt + '_output.pdf','graph/'+rename+'_'+tt + '_output.pdf')
         if os.path.exists(tt + '_legend.pdf'):
-            os.rename(tt + '_legend.pdf',rename+'_'+tt + '_legend.pdf')
-        shutil.copyfile('config/'+configpath+'.py', configpath + '_' + rename + '.py')
+            os.rename(tt + '_legend.pdf','graph/'+rename+'_'+tt + '_legend.pdf')
+        shutil.copyfile('config/'+configpath+'.py', 'graph/'+configpath + '_' + rename + '.py')
 
 if __name__== "__main__":
     parser = argparse.ArgumentParser(description='plot_data')
