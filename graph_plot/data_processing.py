@@ -122,3 +122,4 @@ def save_graph_data(title,data,sysparam,xnum,znum,lnum):
             nz+=1
 
     np.savetxt(title,np.hstack([pdata,sdata]), delimiter=",")
+    return np.hstack([pdata,sdata])
