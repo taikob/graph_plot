@@ -7,7 +7,7 @@ import numpy as np
 configpath ='config_0'
 dir = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
-cnfg = sc.get_config(configpath)
+cnfg = sc.get_config(os.getcwd(),configpath)
 data, sysparam, nump = d.prepare_data(cnfg)
 path = d.save_graph_data(data, sysparam, cnfg)
 dt = p.plot(np.loadtxt(path,delimiter=','),cnfg)

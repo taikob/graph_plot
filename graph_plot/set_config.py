@@ -43,7 +43,7 @@ def set_config():
         f.write('#cl:\n')
         f.write('#nogrid:')
 
-def get_config(configpath,fixparaml=None):
+def get_config(cwd,configpath,fixparaml=None):
 
     if configpath is None or configpath is '':
         print('Please set config file!')
@@ -52,7 +52,7 @@ def get_config(configpath,fixparaml=None):
         print('config file is not here! ', 'config/'+configpath+'.py')
         sys.exit()
 
-    sys.path.append(os.getcwd()+'/config')
+    sys.path.append(cwd+'/config')
     exec('import ' + configpath + ' as p')
 
     cnfg = {}
