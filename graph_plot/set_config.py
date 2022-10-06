@@ -52,6 +52,8 @@ def get_config(fixparaml=None):
     import config as p
 
     cnfg = {}
+    cnfg['pickuppath'] = p.pickuppath
+    cnfg['refd'] = p.refd
     cnfg['dataname'] = p.dataname
     cnfg['fixparam'] = fixparaml
     cnfg['exceptnum'] = p.exceptnum

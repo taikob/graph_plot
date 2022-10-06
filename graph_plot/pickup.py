@@ -44,6 +44,19 @@ def pickup(data,pk_cnfg):
     np.savetxt('pickup.csv',pl,delimiter=',')
     return pl
 
+def pickup_image(stmpath, copyfile, pupath):
+    pu = np.loadtxt(pupath,delimiter=',')
+    pu = pu.tolist()
+
+    dir =os.path.dirname(pupath) + '/puimg'
+    if not os.path.exists(dir): os.makedirs(dir)
+
+    del pu[0]
+    for rl in pu:
+        orname = stmpath + '/' + str(int(rl[0])) + '/' + str(int(rl[1])) + '.pth/' + copyfile
+        cpname = dir + '/' + str(int(rl[0])) + '_' + str(int(rl[1])) + os.path.splitext(copyfile)[-1]
+        shutil.copyfile(orname, cpname)
+
 if __name__ == '__main__':
     cnfg = get_config()
     dl = get_datalist(cnfg['dl_cnfg'],cnfg['rfr'])
@@ -54,3 +67,10 @@ if __name__ == '__main__':
     shutil.copyfile('config/config.py', dir + '/config.py')
     os.rename('datalist.csv', dir + '/datalist.csv')
     os.rename('pickup.csv', dir + '/pickup.csv')
+
+    pupath = dir + '/pickup.csv'
+    stmpath = '../result/net0/st0_ln20_li0_imsw2_read_list.txt'
+    copyfile = 'test_14y_0.jpg'
+
+    pu = np.loadtxt(pupath, delimiter = ',')
+    pickup_image(stmpath, copyfile, pupath)

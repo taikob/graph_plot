@@ -1,6 +1,8 @@
-import os, datetime
+import os, datetime, csv
+import sys
+
 from graph_plot import data_processing as d
-from graph_plot import set_config as sc
+import set_config as sc
 import matplotlib.pyplot as plt
 from data_prcs import get as g
 import numpy as np
@@ -38,6 +40,20 @@ def graph_paraset(cnfg):
     if xtick is not None: plt.xticks(color="None")
     if ytick is not None: plt.yticks(color="None")
 
+def pickupdata(data,pickuppath,refd):
+    with open(pickuppath) as f: picklist = [row for row in csv.reader(f)]
+    pickdata = np.copy(data)
+    pickdata[:,3] = np.nan
+
+    del picklist[0]
+    for i in range(pickdata.shape[0]):
+        for j in reversed(range(len(picklist))):
+            if  pickdata[i, refd[1]] == float(picklist[j][1]) and pickdata[i, refd[0]] == float(picklist[j][0]):
+                pickdata[i,3] = data[i,3]
+        if len(picklist)==0: break
+
+    return pickdata
+
 def plot(data,cnfg):
     xline = cnfg['xline']; yline = cnfg['yline']
     hsize = cnfg['hsize']; vsize = cnfg['vsize']
@@ -45,9 +61,11 @@ def plot(data,cnfg):
     xplotnum = cnfg['xplotnum']; yplotnum = cnfg['yplotnum']
     wspace = cnfg['wspace']; hspace = cnfg['hspace']; title = cnfg['title']
     lnsize = cnfg['lnsize']; mksize = cnfg['mksize']
+    pickuppath = cnfg['pickuppath']; refd = cnfg['refd']
 
     sysparam, nump=g.get_sysparam(data,range(0,3))
-    data=d.make_graphdata(data,sysparam,nump,0,3,1,2)
+    if pickuppath is not None: pickup = d.make_graphdata(pickupdata(data,pickuppath,refd),sysparam,nump,0,3,1,2)
+    data = d.make_graphdata(data,sysparam,nump,0,3,1,2)
 
     plot_paraset()
     fig = plt.figure(figsize=(hsize*xplotnum,vsize*yplotnum))
@@ -66,6 +84,8 @@ def plot(data,cnfg):
 
         for yn in range(0, data.shape[1]):
             plt.plot(sysparam[0], data[:,yn,l], gl, label=str(sysparam[1][yn]), linewidth=lnsize, markersize=mksize)
+            if pickuppath is not None:
+                plt.plot(sysparam[0], pickup[:,yn,l], 'o', label=str(sysparam[1][yn]), markersize=float(mksize*1.1), color='red')
 
     # save files
     plt.close()
@@ -77,8 +97,8 @@ def plot(data,cnfg):
     return dt
 
 if __name__== "__main__":
-    configpath='config_0'
-    datapath='20221005163545/x6_y14_z1_l5.csv'
+    configpath='config'
+    datapath='20221006180502/x6_y14_z1_l5.csv'
 
     cnfg = sc.get_config(configpath)
     dt = plot(np.loadtxt(datapath,delimiter=','),cnfg)

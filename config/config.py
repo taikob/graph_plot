@@ -7,7 +7,7 @@ xnum=6
 ynum=14
 znum=1
 lnum=5
-fixparam=[[0,2],[4,0],[7,15]]
+fixparam=[[0,0],[4,0],[7,15]]
 addt=None
 tc=0
 pc=0
@@ -47,6 +47,8 @@ xplotnum=10
 yplotnum=10
 wspace = 0.2
 hspace = 0.2
+pickuppath = 'pickup.csv'
+refd = [2,0] #refferrence dimension
 
 xtick=None
 ytick=None
