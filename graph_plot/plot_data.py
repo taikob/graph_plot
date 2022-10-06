@@ -1,8 +1,8 @@
 import os, datetime
+from graph_plot import data_processing as d
+from graph_plot import set_config as sc
 import matplotlib.pyplot as plt
 from data_prcs import get as g
-import data_processing as d
-from graph_plot import set_config as sc
 import numpy as np
 
 def plot_paraset():
