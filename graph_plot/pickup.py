@@ -23,6 +23,7 @@ def get_datalist(dl_cnfg,rfr):
         for j in range(len(rfr[i])):
             de = np.array(dp.datafilter(data, rfr[i][j][0]))
             dle = np.empty((de.shape[0], 3))#data list element
+            if de.shape[0] == 0: print('there are no data in fixeddata');sys.exit()
             dle[:,0] = de[:,dl_cnfg[i][1]]
             dle[:,1] = de[:,dl_cnfg[i][2]]
             dle[:,2] = de[:,rfr[i][j][1]]
