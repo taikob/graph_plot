@@ -51,7 +51,7 @@ def pickup_image(stmpath, copyfile, pupath):
     pu = np.loadtxt(pupath,delimiter=',')
     pu = pu.tolist()
 
-    dir =os.path.dirname(pupath) + '/puimg'
+    dir =os.path.dirname(pupath) + '/puimg_'+copyfile.split()[0]
     if not os.path.exists(dir): os.makedirs(dir)
 
     del pu[0]
