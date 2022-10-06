@@ -1,7 +1,7 @@
 dl_cnfg = []; rfr = []
 
 # data1
-path = '../result/stat_stater.csv'
+path = 'stat_stater.csv'
 lrn = 5
 frm = 6
 dl_cnfg.append([path ,lrn ,frm])
