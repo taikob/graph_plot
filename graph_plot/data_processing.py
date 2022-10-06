@@ -1,6 +1,7 @@
-import csv,sys,os,datetime,shutil
-import numpy as np
+import csv,os,datetime,shutil
 from data_prcs import get as g
+import set_config as sc
+import numpy as np
 
 def datafilter(data, fixparam):
 
@@ -90,7 +91,9 @@ def rangelimit(data, sysparam, nump, xnum, xmin, xmax,ax):
 
     return data, sysparam, nump
 
-def save_graph_data(dir,data,sysparam,xnum,ynum,znum,lnum):
+def save_graph_data(data,sysparam,cnfg):
+    xnum = cnfg['xnum']; ynum = cnfg['ynum']; znum = cnfg['znum']; lnum = cnfg['lnum']
+
     xdata=sysparam[xnum]
     if znum is not None: zdata=sysparam[znum]
     if lnum is not None: ldata=sysparam[lnum]
@@ -113,75 +116,18 @@ def save_graph_data(dir,data,sysparam,xnum,ynum,znum,lnum):
             if lnum is not None and znum is None: pdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 1] = 0
             nz+=1
 
-    if not os.path.exists(dir): os.mkdir(dir)
-    dir += '/x' + str(xnum) + '_y' + str(ynum) + '_z' + str(znum) + '_l' + str(lnum) + '.csv'
+    dir = 'x' + str(xnum) + '_y' + str(ynum) + '_z' + str(znum) + '_l' + str(lnum) + '.csv'
     np.savetxt(dir,np.hstack([pdata,sdata]), delimiter=",")
     return dir
 
-def get_config(configpath,fixparaml=None):
-
-    if configpath is None or configpath is '':
-        print('Please set config file!')
-        import set_config as sc
-        sc.main(); sys.exit()
-    elif not os.path.exists('config/'+configpath+'.py'):
-        print('config file is not here! ', 'config/'+configpath+'.py')
-        sys.exit()
-
-    sys.path.append(os.getcwd()+'/config')
-    exec('import ' + configpath + ' as p')
-
-    global dataname; dataname = p.dataname
-    global fixparam; fixparam = fixparaml
-    global exceptnum;exceptnum=p.exceptnum
-    global exceptval;exceptval=p.exceptval
-    global exceptreq;exceptreq=p.exceptreq
-    global paramrow ;paramrow=p.paramrow
-    global xnum;     xnum=p.xnum
-    global ynum;     ynum=p.ynum
-    global znum;     znum=p.znum
-    global lnum;     lnum=p.lnum
-    global xmin;     xmin=p.xmin
-    global xmax;     xmax=p.xmax
-    global zmin;     zmin=p.zmin
-    global zmax;     zmax=p.zmax
-    global lmin;     lmin=p.lmin
-    global lmax;     lmax=p.lmax
-    global tc;       tc=p.tc
-    global cl;       cl=p.cl
-    global gl;       gl='-o'
-    global pc;       pc=p.pc
-    global addt;     addt=p.addt
-    global lineplot; lineplot=None
-    global xtitle;   xtitle=p.xtitle
-    global ytitle;   ytitle=p.ytitle
-    global hsize; hsize=1.89
-    global vsize; vsize=0.7
-    global xlog;   xlog=p.xlog
-    global ylog;   ylog=p.ylog
-    global nogrid; nogrid=p.nogrid
-    global xlm;    xlm =p.xlm
-    global xmal;   xmal=p.xmal
-    global xmil;   xmil=p.xmil
-    global ylm;    ylm =p.ylm
-    global ymal;   ymal=p.ymal
-    global ymil;   ymil=p.ymil
-    global xtick;   xtick=p.xtick
-    global ytick;   ytick=p.ytick
-    global mksize; mksize=3
-    global lnsize; lnsize=0.5
-    global dashline; dashline=None
-    global fitdata; fitdata=None
-
-    if hasattr(p,'lineplot'): lineplot=p.lineplot
-    if hasattr(p,'hsize' ): hsize=p.hsize
-    if hasattr(p,'vsize' ): vsize=p.vsize
-    if hasattr(p,'mksize'): mksize=p.mksize
-    if hasattr(p,'lnsize'): lnsize=p.lnsize
-    if hasattr(p, 'gl'): gl = p.gl
-    if fixparam == None: fixparam = p.fixparam
-
-def prepare_data(dataname,paramrow,xnum, ynum,lnum,fixparam,xmin=None,xmax=None,zmin=None,zmax=None,znum=None,lmin=None,lmax=None,exceptnum=None, exceptval=None, exceptreq=None):
+def prepare_data(cnfg):
+    dataname = cnfg['dataname'];  exceptnum = cnfg['exceptnum']
+    exceptval = cnfg['exceptval'];exceptreq = cnfg['exceptreq']
+    fixparam = cnfg['fixparam'];  paramrow = cnfg['paramrow']
+    xnum = cnfg['xnum'];xmin = cnfg['xmin'];xmax = cnfg['xmax']
+    ynum = cnfg['ynum']
+    znum = cnfg['znum'];zmin = cnfg['zmin'];zmax = cnfg['zmax']
+    lnum = cnfg['lnum'];lmin = cnfg['lmin'];lmax = cnfg['lmax']
 
     with open(dataname) as f: data = [row for row in csv.reader(f)]
 
@@ -201,8 +147,11 @@ if __name__ == '__main__':
 
     configpath='config_0'
 
-    get_config(configpath)
+    cnfg = sc.get_config(configpath)
     dir = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    data, sysparam, nump = prepare_data(dataname, paramrow, xnum, ynum, lnum, fixparam)
-    save_graph_data(dir, data, sysparam, xnum, znum, lnum)
+    data, sysparam, nump = prepare_data(cnfg)
+    path = save_graph_data(data, sysparam, cnfg)
+
+    if not os.path.exists(dir): os.mkdir(dir)
     shutil.copyfile('config/' + configpath + '.py', dir + '/config.py')
+    os.rename(path, dir + '/' +path)

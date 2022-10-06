@@ -1,7 +1,8 @@
-import sys, os, datetime
+import os, datetime
 import matplotlib.pyplot as plt
-import data_processing as d
 from data_prcs import get as g
+import data_processing as d
+import set_config as sc
 import numpy as np
 
 def plot_paraset():
@@ -18,7 +19,12 @@ def plot_paraset():
     plt.rcParams["ytick.right"] = True
     plt.rcParams["font.size"] = 10
 
-def graph_paraset():
+def graph_paraset(cnfg):
+    xlog = cnfg['xlog']; ylog = cnfg['ylog']
+    nogrid = cnfg['nogrid']
+    xlm = cnfg['xlm']; xmal = cnfg['xmal']; xmil = cnfg['xmil']
+    ylm = cnfg['ylm']; ymal = cnfg['ymal']; ymil = cnfg['ymil']
+    xtick = cnfg['xtick']; ytick = cnfg['ytick']
 
     if xlog is not None: plt.xscale("log")
     if ylog is not None: plt.yscale("log")
@@ -32,56 +38,34 @@ def graph_paraset():
     if xtick is not None: plt.xticks(color="None")
     if ytick is not None: plt.yticks(color="None")
 
-def plot(data, configpath):
-    if configpath is None or configpath is '':
-        print('Please set config file!')
-        import set_config as sc
-        sc.main(); sys.exit()
-    elif not os.path.exists('config/'+configpath+'.py'):
-        print('config file is not here! ', 'config/'+configpath+'.py')
-        sys.exit()
-
-    sys.path.append(os.getcwd()+'/config')
-    exec('import ' + configpath + ' as p')
-
-    global tc, cl, gl, pc, addt,wspace,hspace, xline,yline,xtitle,ytitle, xtick, ytick, hsize, vsize,xlog,ylog,nogrid,xlm
-    global xmal,xmil,ylm,ymal,ymil,xplotnum,yplotnum,title,mksize,lnsize,dashline,fitdata
-    tc=p.tc; cl=p.cl; gl='-o'; pc=p.pc; addt=p.addt; wspace = p.wspace; hspace = p.hspace; vsize=0.7; xlog=p.xlog; ylog=p.ylog
-    xline=p.xline; yline=p.yline; xtitle=p.xtitle; ytitle=p.ytitle; xtick=p.xtick; ytick=p.ytick; hsize=1.89; nogrid=p.nogrid
-    xlm = p.xlm; xmal = p.xmal; xmil=p.xmil; ylm =p.ylm; ymal=p.ymal; ymil=p.ymil; xplotnum=p.xplotnum; yplotnum=p.yplotnum
-    title = p.title; mksize=3; lnsize=0.5; dashline=None; fitdata=None
-
-    if hasattr(p,'hsize' ): hsize=p.hsize
-    if hasattr(p,'vsize' ): vsize=p.vsize
-    if hasattr(p,'mksize'): mksize=p.mksize
-    if hasattr(p,'lnsize'): lnsize=p.lnsize
-    if hasattr(p, 'gl'): gl = p.gl
+def plot(data,cnfg):
+    xline = cnfg['xline']; yline = cnfg['yline']
+    hsize = cnfg['hsize']; vsize = cnfg['vsize']
+    xlm = cnfg['xlm']; ylm = cnfg['ylm']; gl = cnfg['gl']
+    xplotnum = cnfg['xplotnum']; yplotnum = cnfg['yplotnum']
+    wspace = cnfg['wspace']; hspace = cnfg['hspace']; title = cnfg['title']
+    lnsize = cnfg['lnsize']; mksize = cnfg['mksize']
 
     sysparam, nump=g.get_sysparam(data,range(0,3))
     data=d.make_graphdata(data,sysparam,nump,0,3,1,2)
 
     plot_paraset()
-    graph_paraset()
     fig = plt.figure(figsize=(hsize*xplotnum,vsize*yplotnum))
 
-    xdata=sysparam[0]
-    pltt=  range(nump[2])# plot table
+    if type(xline) != list: xline=[xline]*nump[2]
+    if type(yline) != list: yline=[yline]*nump[2]
 
-    if type(xline) != list: xline=[xline]*len(pltt)
-    if type(yline) != list: yline=[yline]*len(pltt)
-
-    for l in pltt:
+    for l in range(nump[2]):
         plt.subplot(xplotnum, yplotnum, l+1)
-        graph_paraset()
+        plt.subplots_adjust(wspace=wspace, hspace=hspace)
+        graph_paraset(cnfg)
 
         if xline is not None: plt.hlines([xline[l]], xlm[0], xlm[1], "black", linewidth=0.7)  # hlines
         if yline is not None: plt.vlines([yline[l]], ylm[0], ylm[1], "black", linewidth=0.7)  # hlines
-
-        plt.subplots_adjust(wspace=wspace, hspace=hspace)
         if title is not None: plt.title(str(sysparam[2][l]),x=0.5,y=0.9)
 
         for yn in range(0, data.shape[1]):
-            plt.plot(xdata, data[:,yn,l], gl, label=str(sysparam[1][yn]), linewidth=lnsize, markersize=mksize)
+            plt.plot(sysparam[0], data[:,yn,l], gl, label=str(sysparam[1][yn]), linewidth=lnsize, markersize=mksize)
 
     # save files
     plt.close()
@@ -96,6 +80,7 @@ if __name__== "__main__":
     configpath='config_0'
     datapath='20221005163545/x6_y14_z1_l5.csv'
 
-    dt = plot(np.loadtxt(datapath,delimiter=','),configpath)
+    cnfg = sc.get_config(configpath)
+    dt = plot(np.loadtxt(datapath,delimiter=','),cnfg)
     os.rename('output_'+dt+'.pdf', os.path.dirname(datapath)+'/output_'+dt+'.pdf')
     os.rename('legend_'+dt+'.pdf', os.path.dirname(datapath)+'/legend_'+dt+'.pdf')
