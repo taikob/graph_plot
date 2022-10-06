@@ -2,7 +2,7 @@ import os, datetime, csv
 import sys
 
 from graph_plot import data_processing as d
-import set_config as sc
+from graph_plot import set_config as sc
 import matplotlib.pyplot as plt
 from data_prcs import get as g
 import numpy as np
