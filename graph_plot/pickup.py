@@ -1,6 +1,6 @@
+import csv, os, sys, datetime, shutil,copy
 from graph_plot import data_processing as dp
 import numpy as np
-import csv, os, sys, datetime, shutil
 
 def get_config():
     if not os.path.exists('config/config.py'):
@@ -21,7 +21,7 @@ def get_datalist(dl_cnfg,rfr):
     for i in range(len(dl_cnfg)):
         with open(dl_cnfg[i][0]) as f: data = [row for row in csv.reader(f)]
         for j in range(len(rfr[i])):
-            de = np.array(dp.datafilter(data, rfr[i][j][0]))
+            de = np.array(dp.datafilter(copy.deepcopy(data), rfr[i][j][0]))
             dle = np.empty((de.shape[0], 3))#data list element
             if de.shape[0] == 0: print('there are no data in fixeddata');sys.exit()
             dle[:,0] = de[:,dl_cnfg[i][1]]
