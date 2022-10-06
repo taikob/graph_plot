@@ -26,7 +26,7 @@ def get_datalist(dl_cnfg,rfr):
             dle[:,0] = de[:,dl_cnfg[i][1]]
             dle[:,1] = de[:,dl_cnfg[i][2]]
             dle[:,2] = de[:,rfr[i][j][1]]
-            if 'dl' in locals(): dl = np.hstack((dl, dle[:,2]))
+            if 'dl' in locals(): dl = np.hstack((dl, dle[:,2][:,np.newaxis]))
             else: dl = dle
 
     np.savetxt('datalist.csv',dl, delimiter=",")
@@ -36,7 +36,9 @@ def pickup(data,pk_cnfg):
     pl = []; count = {}; cnt = 0 #pickup list
     for d in data:
         for i, c in enumerate(pk_cnfg):
-            if eval(str(d[i+2]) + c):
+            if not eval(str(d[i+2]) + c): break
+
+            if  i == len(pk_cnfg)-1:
                 if not d[i] in count: count[d[i]] = 1
                 pl.append([d[0],d[1]]); cnt += 1
 
