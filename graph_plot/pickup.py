@@ -39,7 +39,7 @@ def pickup(data,pk_cnfg):
             if not eval(str(d[i+2]) + c): break
 
             if  i == len(pk_cnfg)-1:
-                if not d[i] in count: count[d[i]] = 1
+                if not d[0] in count: count[d[0]] = 1
                 pl.append([d[0],d[1]]); cnt += 1
 
     pl = np.array([[len(count), cnt]] + pl)
