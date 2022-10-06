@@ -43,19 +43,13 @@ def set_config():
         f.write('#cl:\n')
         f.write('#nogrid:')
 
-def get_config(configpath,fixparaml=None):
-
-    if configpath is None or configpath is '':
-        print('Please set config file!')
-        set_config(); sys.exit()
-    elif not os.path.exists('config/'+configpath+'.py'):
+def get_config(fixparaml=None):
+    if not os.path.exists('config/config.py'):
         print('config file is not here! ', 'config/'+configpath+'.py')
         sys.exit()
 
     sys.path.append(os.getcwd()+'/config')
-    exec('import ' + configpath + ' as p')
-
-    print(locals())
+    import config as p
 
     cnfg = {}
     cnfg['dataname'] = p.dataname
