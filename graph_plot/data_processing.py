@@ -1,6 +1,6 @@
 import csv,os,datetime,shutil
 from data_prcs import get as g
-import set_config as sc
+from graph_plot import set_config as sc
 import numpy as np
 
 def datafilter(data, fixparam):
