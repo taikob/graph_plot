@@ -37,6 +37,7 @@ def pickup(data,pk_cnfg):
     pl = []; count = {}; cnt = 0 #pickup list
     for d in data:
         for i, c in enumerate(pk_cnfg):
+            if str(d[i+2]) == 'nan' :break
             if not eval(str(d[i+2]) + c): break
 
             if  i == len(pk_cnfg)-1:
