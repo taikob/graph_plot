@@ -14,6 +14,8 @@ def get_config():
     cnfg['rfr'] = p.rfr
     cnfg['dl_cnfg'] = p.dl_cnfg
     cnfg['pk_cnfg'] = p.pk_cnfg
+    cnfg['stmpath'] = p.stmpath
+    cnfg['copyfile'] = p.copyfile
 
     return cnfg
 
@@ -55,6 +57,7 @@ def pickup_image(stmpath, copyfile, pupath):
     dir =os.path.dirname(pupath) + '/puimg_'+copyfile.split('.')[0]
     if not os.path.exists(dir): os.makedirs(dir)
 
+    if pu == [0,0]: print('there are no pickup model.'); sys.exit()
     del pu[0]
     for rl in pu:
         orname = stmpath + '/' + str(int(rl[0])) + '/' + str(int(rl[1])) + '.pth/' + copyfile
