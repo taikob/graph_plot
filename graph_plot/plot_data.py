@@ -74,7 +74,7 @@ def plot(data,cnfg):
     if type(yline) != list: yline=[yline]*nump[2]
 
     for l in range(nump[2]):
-        plt.subplot(xplotnum, yplotnum, l+1)
+        plt.subplot(yplotnum, xplotnum, l+1)
         plt.subplots_adjust(wspace=wspace, hspace=hspace)
         graph_paraset(cnfg)
 
