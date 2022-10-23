@@ -60,8 +60,12 @@ def pickup_image(stmpath, copyfile, pupath):
     if pu == [0,0]: print('there are no pickup model.'); sys.exit()
     del pu[0]
     for rl in pu:
-        orname = stmpath + '/' + str(int(rl[0])) + '/' + str(int(rl[1])) + '.pth/' + copyfile
-        cpname = dir + '/' + str(int(rl[0])) + '_' + str(int(rl[1])) + os.path.splitext(copyfile)[-1]
+        if len(str(rl[0]))!=14:
+            rln = str(int(rl[0]))[:14];tmp=str(int(float(rl[0])))[14:]
+            while len(tmp)>0: rln +='_'+str(int(float(tmp[:2])));tmp=tmp[2:]
+        else: rln=str(int(rl[0]))
+        orname = stmpath + '/' + rln + '/' + str(int(rl[1])) + '.pth/' + copyfile
+        cpname = dir + '/' + rln + '_' + str(int(rl[1])) + os.path.splitext(copyfile)[-1]
         shutil.copyfile(orname, cpname)
 
 if __name__ == '__main__':
