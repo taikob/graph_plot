@@ -19,6 +19,16 @@ def get_config():
 
     return cnfg
 
+def add_dl(dla,dl):
+    nda = dla.shape[1]
+    for i in range(dl.shape[1]-2): dla = np.insert(dla, dla.shape[1], 0, axis=1)
+
+    for i,da in enumerate(dla):
+        for j,d in enumerate(dl):
+            if da[0]==d[0] and da[1]==d[1]:
+                dla[i,nda:] = d[2:]
+                del dl[j]
+
 def get_datalist(dl_cnfg,rfr):
     for i in range(len(dl_cnfg)):
         with open(dl_cnfg[i][0]) as f: data = [row for row in csv.reader(f)]
@@ -26,14 +36,17 @@ def get_datalist(dl_cnfg,rfr):
             de = np.array(dp.datafilter(copy.deepcopy(data), rfr[i][j][0]))
             dle = np.empty((de.shape[0], 3))#data list element
             if de.shape[0] == 0: print('there are no data in fixeddata');sys.exit()
-            dle[:,0] = de[:,dl_cnfg[i][1]]
-            dle[:,1] = de[:,dl_cnfg[i][2]]
             dle[:,2] = de[:,rfr[i][j][1]]
             if 'dl' in locals(): dl = np.hstack((dl, dle[:,2][:,np.newaxis]))
-            else: dl = dle
+            else:
+                dle[:,0] = de[:,dl_cnfg[i][1]]
+                dle[:,1] = de[:,dl_cnfg[i][2]]
+                dl = dle
+        if 'dla' in locals(): dla = add_dl(dla,dl)
+        else: dla = dl
 
-    np.savetxt('datalist.csv',dl, delimiter=",")
-    return dl
+    np.savetxt('datalist.csv',dla, delimiter=",")
+    return dla
 
 def pickup(data,pk_cnfg):
     pl = []; count = {}; cnt = 0 #pickup list
@@ -44,7 +57,7 @@ def pickup(data,pk_cnfg):
 
             if  i == len(pk_cnfg)-1:
                 if not d[0] in count: count[d[0]] = 1
-                pl.append([d[0],d[1]]); cnt += 1
+                pl.append(d); cnt += 1
 
     pl = np.array([[len(count), cnt]] + pl)
     np.savetxt('pickup.csv',pl,delimiter=',')
