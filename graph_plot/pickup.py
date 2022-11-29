@@ -23,11 +23,11 @@ def add_dl(dla,dl):
     nda = dla.shape[1]
     for i in range(dl.shape[1]-2): dla = np.insert(dla, dla.shape[1], 0, axis=1)
 
-    for i,da in enumerate(dla):
-        for j,d in enumerate(dl):
-            if da[0]==d[0] and da[1]==d[1]:
-                dla[i,nda:] = d[2:]
-                del dl[j]
+    for i in range(dla.shape[0]):
+        for j in range(dl.shape[0]):
+            if dla[i,0]==dl[j,0] and dla[i,1]==dl[j,1]:
+                dla[i,nda:] = dl[j,2:]
+    return dla
 
 def get_datalist(dl_cnfg,rfr):
     for i in range(len(dl_cnfg)):
