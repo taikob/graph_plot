@@ -47,20 +47,21 @@ def get_datalist(dl_cnfg,rfr):
     np.savetxt('datalist.csv',dla, delimiter=",")
     return dla
 
-def pickup(data,pk_cnfg):
-    pl = []; count = {}; cnt = 0 #pickup list
+def pickup(data, pk_cnfg):
+    pl = []; count = {}; cnt = 0  # pickup list
     for d in data:
         for i, c in enumerate(pk_cnfg):
-            if str(d[i+2]) == 'nan' :break
-            if not eval(str(d[i+2]) + c): break
+            if str(d[i + 2]) == 'nan': break
+            if not eval(str(d[i + 2]) + c): break
 
-            if  i == len(pk_cnfg)-1:
+            if i == len(pk_cnfg) - 1:
                 if not d[0] in count: count[d[0]] = 1
-                pl.append(d); cnt += 1
+                pl.append(list(d)); cnt += 1
 
-    pl = np.array([[len(count), cnt]] + pl)
-    np.savetxt('pickup.csv',pl,delimiter=',')
+    pl = np.array([[len(count), cnt] + [0] * (len(pl[0]) - 2)] + pl)
+    np.savetxt('pickup.csv', pl, delimiter=',')
     return pl
+
 
 def pickup_image(stmpath, copyfile, pupath):
     pu = np.loadtxt(pupath,delimiter=',')
