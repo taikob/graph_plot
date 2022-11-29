@@ -25,8 +25,7 @@ def add_dl(dla,dl):
 
     for i in range(dla.shape[0]):
         for j in range(dl.shape[0]):
-            if dla[i,0]==dl[j,0] and dla[i,1]==dl[j,1]:
-                dla[i,nda:] = dl[j,2:]
+            if dla[i,0]==dl[j,0] and dla[i,1]==dl[j,1]: dla[i,nda:] = dl[j,2:]
     return dla
 
 def get_datalist(dl_cnfg,rfr):
