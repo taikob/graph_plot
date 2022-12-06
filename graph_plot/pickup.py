@@ -11,11 +11,11 @@ def get_config():
     import config_pickup as p
 
     cnfg = {}
-    cnfg['rfr'] = p.rfr
-    cnfg['dl_cnfg'] = p.dl_cnfg
-    cnfg['pk_cnfg'] = p.pk_cnfg
-    cnfg['stmpath'] = p.stmpath
-    cnfg['copyfile'] = p.copyfile
+    if hasattr(p,     'rfr'): cnfg[     'rfr'] = p.rfr
+    if hasattr(p, 'dl_cnfg'): cnfg[ 'dl_cnfg'] = p.dl_cnfg
+    if hasattr(p, 'pk_cnfg'): cnfg[ 'pk_cnfg'] = p.pk_cnfg
+    if hasattr(p, 'stmpath'): cnfg[ 'stmpath'] = p.stmpath
+    if hasattr(p,'copyfile'): cnfg['copyfile'] = p.copyfile
 
     return cnfg
 
