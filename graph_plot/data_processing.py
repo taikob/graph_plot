@@ -30,46 +30,42 @@ def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum,fixparam=None):
 
     if lnum is not None and znum is None:
         aldata=np.zeros([nump[xnum],1,nump[lnum]])
-        lpara=sysparam[lnum]
-        zpara=[0]
+        lpara=sysparam[lnum]; zpara=[0]
     elif lnum is not None:
         aldata=np.zeros([nump[xnum],nump[znum],nump[lnum]])
-        lpara=sysparam[lnum]
-        zpara=sysparam[znum]
+        aldata[:,:]=None
+        lpara=sysparam[lnum]; zpara=sysparam[znum]
     elif znum is not None:
         aldata=np.zeros([nump[xnum],nump[znum], 1])
+        aldata[:,:]=None
         lpara=[0]
         zpara=sysparam[znum]
     else:
         aldata=np.zeros([nump[xnum],1,1])
-        lpara=[0]
-        zpara=[0]
+        aldata[:,:]=None
+        lpara=[0]; zpara=[0]
 
     xpara = sysparam[xnum]
 
     for li, l in enumerate(lpara):
         if lnum is not None:
             ldata=np.ndarray([0,len(data[0])])
+            ldata[:,:]=None
             for d in data:
-                if float(d[lnum])==l:
-                    ldata=np.vstack((ldata, d))
-        else:
-            ldata=data
+                if float(d[lnum])==l: ldata=np.vstack((ldata, d))
+        else: ldata=data
 
         for zi, z in enumerate(zpara):
             if znum is not None:
                 zdata=np.ndarray([0,len(data[0])])
+                zdata[:,:]=None
                 for d in ldata:
-                    if float(d[znum])==z:
-                        zdata=np.vstack((zdata, d))
-            else:
-                zdata=ldata
-
+                    if float(d[znum])==z: zdata=np.vstack((zdata, d))
+            else: zdata=ldata
 
             for xi, x in enumerate(xpara):
                 for d in zdata:
-                    if float(d[xnum]) == x:
-                        aldata[xi][zi][li] = d[ynum]
+                    if float(d[xnum]) == x: aldata[xi][zi][li] = d[ynum]
 
     return aldata
 
