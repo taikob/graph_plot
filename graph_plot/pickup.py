@@ -43,6 +43,7 @@ def get_datalist(dl_cnfg,rfr):
                 dl = dle
         if 'dla' in locals(): dla = add_dl(dla,dl)
         else: dla = dl
+        del dl
 
     np.savetxt('datalist.csv',dla, delimiter=",")
     return dla
