@@ -4,13 +4,14 @@ from data_prcs import get as g
 import numpy as np
 
 def datafilter(data, fixparam):
-
+  deldata = []
   for param in fixparam:
     for i in reversed(range(len(data))):
       if float(data[i][param[0]])!=float(param[1]):
+        deldata.append(data[i])
         del data[i]
 
-  return data
+  return data,deldata
 
 def dataexcept(data, exceptnum, exceptval, exceptreq, ynum):
     for i in range(len(data)):

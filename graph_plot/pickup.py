@@ -8,11 +8,13 @@ def get_config():
         sys.exit()
 
     sys.path.append(os.getcwd()+'/config')
+    import config_datalist as d
     import config_pickup as p
 
     cnfg = {}
-    if hasattr(p,     'rfr'): cnfg[     'rfr'] = p.rfr
-    if hasattr(p, 'dl_cnfg'): cnfg[ 'dl_cnfg'] = p.dl_cnfg
+    if hasattr(p,     'rfr'): cnfg[     'rfr'] = d.rfr
+    if hasattr(p, 'dl_cnfg'): cnfg[ 'dl_cnfg'] = d.dl_cnfg
+    if hasattr(p, 'dl_path'): cnfg[ 'dl_path'] = p.dl_path
     if hasattr(p, 'pk_cnfg'): cnfg[ 'pk_cnfg'] = p.pk_cnfg
     if hasattr(p, 'stmpath'): cnfg[ 'stmpath'] = p.stmpath
     if hasattr(p,'copyfile'): cnfg['copyfile'] = p.copyfile
@@ -30,13 +32,24 @@ def add_dl(dla,dl):
 
 def get_datalist(dl_cnfg,rfr):
     for i in range(len(dl_cnfg)):
-        with open(dl_cnfg[i][0]) as f: data = [row for row in csv.reader(f)]
+        with open(dl_cnfg[i][0]) as f: original = [row for row in csv.reader(f)]
+        data = copy.deepcopy(original)
         for j in range(len(rfr[i])):
-            de = np.array(dp.datafilter(copy.deepcopy(data), rfr[i][j][0]))
-            dle = np.empty((de.shape[0], 3))#data list element
-            if de.shape[0] == 0: print('there are no data in fixeddata');sys.exit()
-            dle[:,2] = de[:,rfr[i][j][1]]
-            if 'dl' in locals(): dl = np.hstack((dl, dle[:,2][:,np.newaxis]))
+            print('data: ',dl_cnfg[i][0],', reference: ',rfr[i][j])
+
+            #data filtering
+            de, data = dp.datafilter(data, rfr[i][j][0])
+            if len(de) == 0: print('there are no data in fixeddata');sys.exit()
+            if 'dl' in locals():
+                if len(de)!=dl.shape[0]:
+                    print('mismatch of number of lerning model: putdata = ' + str(len(de)) + ', datalist = ' + str(len(data)))
+                    sys.exit()
+
+            #making datalist
+            de = np.array(de)
+            dle = np.empty((de.shape[0], 2+len(rfr[i][j][1])))#data list element
+            for k in range(len(rfr[i][j][1])): dle[:,2+k] = de[:,rfr[i][j][1][k]]
+            if 'dl' in locals(): dl = np.hstack((dl, dle[:,2:]))
             else:
                 dle[:,0] = de[:,dl_cnfg[i][1]]
                 dle[:,1] = de[:,dl_cnfg[i][2]]
@@ -49,20 +62,24 @@ def get_datalist(dl_cnfg,rfr):
     return dla
 
 def pickup(data, pk_cnfg):
+    #pickup
     pl = []; count = {}; cnt = 0  # pickup list
     for d in data:
         for i, c in enumerate(pk_cnfg):
-            if str(d[i + 2]) == 'nan': break
-            if not eval(str(d[i + 2]) + c): break
+            if str(d[c[0]]) == 'nan': break
+            if not eval(str(d[c[0]]) + c[1]): break
 
             if i == len(pk_cnfg) - 1:
                 if not d[0] in count: count[d[0]] = 1
                 pl.append(list(d)); cnt += 1
 
-    pl = np.array([[len(count), cnt] + [0] * (len(pl[0]) - 2)] + pl)
+    #save pickup data
+    if len(pl)==0: pl = np.array([[len(count), cnt]])
+    else: pl = np.array([[len(count), cnt] + [0] * (len(pl[0]) - 2)] + pl)
     np.savetxt('pickup.csv', pl, delimiter=',')
-    return pl
 
+    print('number of pickuped learning: ' + str(len(count)) + ', model: ' + str(cnt))
+    return pl
 
 def pickup_image(stmpath, copyfile, pupath):
     pu = np.loadtxt(pupath,delimiter=',')
