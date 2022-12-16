@@ -130,7 +130,7 @@ def prepare_data(cnfg):
     with open(dataname) as f: data = [row for row in csv.reader(f)]
 
     if exceptnum is not None: data=dataexcept(data, exceptnum, exceptval, exceptreq, ynum)
-    if fixparam != None: data=datafilter(data, fixparam)
+    if fixparam != None: data,_=datafilter(data, fixparam)
 
     sysparam, nump=g.get_sysparam(data,paramrow)
     data=make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum)
