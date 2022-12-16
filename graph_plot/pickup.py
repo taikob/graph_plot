@@ -32,11 +32,9 @@ def add_dl(dla,dl):
 
 def get_datalist(dl_cnfg,rfr):
     for i in range(len(dl_cnfg)):
-        with open(dl_cnfg[i][0]) as f: original = [row for row in csv.reader(f)]
-        data = copy.deepcopy(original)
+        with open(dl_cnfg[i][0]) as f: data = [row for row in csv.reader(f)]
         for j in range(len(rfr[i])):
             print('data: ',dl_cnfg[i][0],', reference: ',rfr[i][j])
-
             #data filtering
             de, data = dp.datafilter(data, rfr[i][j][0])
             if len(de) == 0: print('there are no data in fixeddata');sys.exit()
@@ -47,7 +45,7 @@ def get_datalist(dl_cnfg,rfr):
 
             #making datalist
             de = np.array(de)
-            dle = np.empty((de.shape[0], 2+len(rfr[i][j][1])))#data list element
+            dle = np.empty((de.shape[0], 2+len(rfr[i][j][1])))#dle: data list element
             for k in range(len(rfr[i][j][1])): dle[:,2+k] = de[:,rfr[i][j][1][k]]
             if 'dl' in locals(): dl = np.hstack((dl, dle[:,2:]))
             else:

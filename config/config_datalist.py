@@ -1,22 +1,29 @@
 dl_cnfg = []; rfr = []
 
-# data1
-path = 'stat_statof_converted.csv'
-lrn = 8
-frm = 9
-dl_cnfg.append([path ,lrn ,frm])
-rfrd =[]
 
-#mov and flash y0y0 17 color
-id =[[0,0],[2,0],[3,16],[5, 0],[7, 0], [10,17], [11,0]]
+# data3
+path = 'stat_stater_converted.csv'
+lrn = 1
+frm = 2
+dl_cnfg.append([path ,lrn ,frm])
+rfrd=[]
+
+#error, dev 17
+id =[[3,17]]
 fixpara = id
-row = [1,19]
+row = [4, 8]
 rfrd.append([fixpara, row])
 
-# flash y0y0 18 color
-id =[[0,0],[2,0],[3,16],[5, 0],[7, 0], [10,18], [11,0]]
+#error, dev 18
+id =[[3,18]]
 fixpara = id
-row = [19]
+row = [4, 8]
+rfrd.append([fixpara, row])
+
+#error, dev 19
+id =[[3,19]]
+fixpara = id
+row = [4, 8]
 rfrd.append([fixpara, row])
 
 rfr.append(rfrd)
