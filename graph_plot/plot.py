@@ -2,14 +2,13 @@ import datetime, shutil, os
 import data_processing as d
 import set_config as sc
 import plot_data as p
-import numpy as np
 
 dir = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
 cnfg = sc.get_config()
 data, sysparam, nump = d.prepare_data(cnfg)
 path = d.save_graph_data(data, sysparam, cnfg)
-dt = p.plot(np.loadtxt(path,delimiter=','),cnfg)
+dt = p.plot(data,cnfg,sysparam=sysparam,nump=nump)
 
 if not os.path.exists(dir): os.mkdir(dir)
 shutil.copyfile('config/config.py', dir + '/config.py')

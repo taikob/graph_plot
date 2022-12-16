@@ -28,26 +28,11 @@ def dataexcept(data, exceptnum, exceptval, exceptreq, ynum):
                     data[i][ynum] = 0
     return data
 
-def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum,fixparam=None):
+def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum):
 
-    if lnum is not None and znum is None:
-        aldata=np.zeros([nump[xnum],1,nump[lnum]])
-        lpara=sysparam[lnum]; zpara=[0]
-    elif lnum is not None:
-        aldata=np.zeros([nump[xnum],nump[znum],nump[lnum]])
-        aldata[:,:]=None
-        lpara=sysparam[lnum]; zpara=sysparam[znum]
-    elif znum is not None:
-        aldata=np.zeros([nump[xnum],nump[znum], 1])
-        aldata[:,:]=None
-        lpara=[0]
-        zpara=sysparam[znum]
-    else:
-        aldata=np.zeros([nump[xnum],1,1])
-        aldata[:,:]=None
-        lpara=[0]; zpara=[0]
-
-    xpara = sysparam[xnum]
+    aldata=np.zeros([nump[0],nump[1],nump[2]])
+    aldata[:,:]=None
+    xpara = sysparam[0];zpara = sysparam[1];lpara = sysparam[2]
 
     for li, l in enumerate(lpara):
         if lnum is not None:
@@ -62,7 +47,7 @@ def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum,fixparam=None):
                 zdata=np.ndarray([0,len(data[0])])
                 zdata[:,:]=None
                 for d in ldata:
-                    if float(d[znum])==z: zdata=np.vstack((zdata, d))
+                    if float(d[znum]) == z: zdata=np.vstack((zdata, d))
             else: zdata=ldata
 
             for xi, x in enumerate(xpara):
@@ -92,9 +77,9 @@ def rangelimit(data, sysparam, nump, xnum, xmin, xmax,ax):
 def save_graph_data(data,sysparam,cnfg):
     xnum = cnfg['xnum']; ynum = cnfg['ynum']; znum = cnfg['znum']; lnum = cnfg['lnum']
 
-    xdata=sysparam[xnum]
-    if znum is not None: zdata=sysparam[znum]
-    if lnum is not None: ldata=sysparam[lnum]
+    xdata=sysparam[0]
+    if znum is not None: zdata=sysparam[1]
+    if lnum is not None: ldata=sysparam[2]
 
     tmpd=data.copy()#tmpdata
 
@@ -132,12 +117,12 @@ def prepare_data(cnfg):
     if exceptnum is not None: data=dataexcept(data, exceptnum, exceptval, exceptreq, ynum)
     if fixparam != None: data,_=datafilter(data, fixparam)
 
-    sysparam, nump=g.get_sysparam(data,paramrow)
+    sysparam, nump=g.get_sysparam(data,[xnum,znum,lnum])
     data=make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum)
 
-    if xmin is not None or xmax is not None: data, sysparam, nump = rangelimit(data, sysparam, nump, xnum, xmin, xmax,0)
-    if zmin is not None or zmax is not None: data, sysparam, nump = rangelimit(data, sysparam, nump, znum, zmin, zmax,1)
-    if lmin is not None or lmax is not None: data, sysparam, nump = rangelimit(data, sysparam, nump, lnum, lmin, lmax,2)
+    if xmin is not None or xmax is not None: data, sysparam, nump = rangelimit(data, sysparam, nump, 0, xmin, xmax,0)
+    if zmin is not None or zmax is not None: data, sysparam, nump = rangelimit(data, sysparam, nump, 1, zmin, zmax,1)
+    if lmin is not None or lmax is not None: data, sysparam, nump = rangelimit(data, sysparam, nump, 2, lmin, lmax,2)
 
     return data, sysparam, nump
 

@@ -1,3 +1,4 @@
+import copy
 import os, datetime, csv
 import sys
 
@@ -54,7 +55,7 @@ def pickupdata(data,pickuppath,refd):
 
     return pickdata
 
-def plot(data,cnfg):
+def plot(data,cnfg,sysparam=None,nump=None):
     xline = cnfg['xline']; yline = cnfg['yline']
     hsize = cnfg['hsize']; vsize = cnfg['vsize']
     xlm = cnfg['xlm']; ylm = cnfg['ylm']; gl = cnfg['gl']
@@ -62,17 +63,16 @@ def plot(data,cnfg):
     wspace = cnfg['wspace']; hspace = cnfg['hspace']; title = cnfg['title']
     lnsize = cnfg['lnsize']; mksize = cnfg['mksize']
     pickuppath = cnfg['pickuppath']; refd = cnfg['refd']
+    if sysparam is None or nump is None:
+        sysparam, nump=g.get_sysparam(data,range(0,3))
+        data = d.make_graphdata(data, sysparam, nump, 0, 3, 1, 2)
 
-    sysparam, nump=g.get_sysparam(data,range(0,3))
     if pickuppath is not None: pickup = d.make_graphdata(pickupdata(data,pickuppath,refd),sysparam,nump,0,3,1,2)
-    data = d.make_graphdata(data,sysparam,nump,0,3,1,2)
-
     plot_paraset()
     fig = plt.figure(figsize=(hsize*xplotnum,vsize*yplotnum))
 
     if type(xline) != list: xline=[xline]*nump[2]
     if type(yline) != list: yline=[yline]*nump[2]
-
     for l in range(nump[2]):
         plt.subplot(yplotnum, xplotnum, l+1)
         plt.subplots_adjust(wspace=wspace, hspace=hspace)
