@@ -62,12 +62,14 @@ def plot(data,cnfg,sysparam=None,nump=None):
     xplotnum = cnfg['xplotnum']; yplotnum = cnfg['yplotnum']
     wspace = cnfg['wspace']; hspace = cnfg['hspace']; title = cnfg['title']
     lnsize = cnfg['lnsize']; mksize = cnfg['mksize']
-    pickuppath = cnfg['pickuppath']; refd = cnfg['refd']
+    pickuppath = cnfg['pickuppath']; refd = cnfg['refd'];ynum = cnfg['ynum']
+
+    y = list(range(3, 3 + len(ynum)))
     if sysparam is None or nump is None:
         sysparam, nump=g.get_sysparam(data,range(0,3))
-        data = d.make_graphdata(data, sysparam, nump, 0, 3, 1, 2)
+        data = d.make_graphdata(data, sysparam, nump, 0, y, 1, 2)
 
-    if pickuppath is not None: pickup = d.make_graphdata(pickupdata(data,pickuppath,refd),sysparam,nump,0,3,1,2)
+    if pickuppath is not None: pickup = d.make_graphdata(pickupdata(data,pickuppath,refd),sysparam,nump,0,y,1,2)
     plot_paraset()
     fig = plt.figure(figsize=(hsize*xplotnum,vsize*yplotnum))
 
@@ -81,11 +83,17 @@ def plot(data,cnfg,sysparam=None,nump=None):
         if xline is not None: plt.hlines([xline[l]], xlm[0], xlm[1], "black", linewidth=0.7)  # hlines
         if yline is not None: plt.vlines([yline[l]], ylm[0], ylm[1], "black", linewidth=0.7)  # hlines
         if title is not None: plt.title(str(sysparam[2][l]),x=0.5,y=0.9)
-
-        for yn in range(0, data.shape[1]):
-            plt.plot(sysparam[0], data[:,yn,l], gl, label=str(sysparam[1][yn]), linewidth=lnsize, markersize=mksize)
-            if pickuppath is not None:
-                plt.plot(sysparam[0], pickup[:,yn,l], 'o', label=str(sysparam[1][yn]), markersize=float(mksize*1.1), color='red')
+        for y in range(len(ynum)):
+            if y==1: gl = '--'
+            else: gl = cnfg['gl']
+            for yn in range(0, data.shape[1]):
+                if len(ynum)==2:
+                    if yn==0: cl='black'
+                    elif yn==1: cl='red'
+                else: cl=None
+                plt.plot(sysparam[0], data[:,yn,l,y], gl, label=str(sysparam[1][yn]), linewidth=lnsize, markersize=mksize,color=cl)
+                if pickuppath is not None:
+                    plt.plot(sysparam[0], pickup[:,yn,l,y], 'o', label=str(sysparam[1][yn]), markersize=float(mksize*1.1), color='red')
 
     # save files
     plt.close()

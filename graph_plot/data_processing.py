@@ -17,20 +17,21 @@ def datafilter(data, fixparam):
 def dataexcept(data, exceptnum, exceptval, exceptreq, ynum):
     for i in range(len(data)):
         if len(data[i][exceptnum]) != 0:
-            if exceptreq == 1:
-                if float(data[i][exceptnum]) >= exceptval:
-                    data[i][ynum] = 0
-            if exceptreq ==-1:
-                if float(data[i][exceptnum]) <= exceptval:
-                    data[i][ynum] = 0
-            if exceptreq == 0:
-                if float(data[i][exceptnum]) == exceptval:
-                    data[i][ynum] = 0
+            for y in ynum:
+                if exceptreq == 1:
+                    if float(data[i][exceptnum]) >= exceptval:
+                        data[i][y] = 0
+                if exceptreq ==-1:
+                    if float(data[i][exceptnum]) <= exceptval:
+                        data[i][y] = 0
+                if exceptreq == 0:
+                    if float(data[i][exceptnum]) == exceptval:
+                        data[i][y] = 0
     return data
 
 def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum):
 
-    aldata=np.zeros([nump[0],nump[1],nump[2]])
+    aldata=np.zeros([nump[0],nump[1],nump[2],len(ynum)])
     aldata[:,:]=None
     xpara = sysparam[0];zpara = sysparam[1];lpara = sysparam[2]
 
@@ -52,7 +53,8 @@ def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum):
 
             for xi, x in enumerate(xpara):
                 for d in zdata:
-                    if float(d[xnum]) == x: aldata[xi][zi][li] = d[ynum]
+                    if float(d[xnum]) == x:
+                        for y in range(len(ynum)): aldata[xi][zi][li][y] = d[ynum[y]]
 
     return aldata
 
@@ -87,19 +89,24 @@ def save_graph_data(data,sysparam,cnfg):
     elif znum==None: pdata=np.empty((tmpd.shape[0]* tmpd.shape[1]*tmpd.shape[2],1))
     elif lnum==None: pdata=np.empty((tmpd.shape[0]* tmpd.shape[1]*tmpd.shape[2],2))
     else: pdata=np.empty((tmpd.shape[0]* tmpd.shape[1]*tmpd.shape[2],3))
-    sdata=np.empty((tmpd.shape[0]* tmpd.shape[1]*tmpd.shape[2],1))
+    sdata=np.empty((tmpd.shape[0]* tmpd.shape[1]*tmpd.shape[2],len(ynum)))
 
     nz=0
     for l in range(tmpd.shape[2]):
         for z in range(tmpd.shape[1]):
-            sdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 0]=tmpd[:,z,l]
+            for y in range(len(ynum)):
+                sdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), y]=tmpd[:,z,l,y]
             pdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 0]=xdata
             if znum is not None: pdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 1] = zdata[z]
             if lnum is not None: pdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 2] = ldata[l]
             if lnum is not None and znum is None: pdata[tmpd.shape[0] * nz : tmpd.shape[0] * (nz + 1), 1] = 0
             nz+=1
 
-    dir = 'x' + str(xnum) + '_y' + str(ynum) + '_z' + str(znum) + '_l' + str(lnum) + '.csv'
+    yname=''
+    for y in ynum:yname+=str(y)+'_'
+    yname=yname.rstrip('_')
+
+    dir = 'x' + str(xnum) + '_y' + str(yname) + '_z' + str(znum) + '_l' + str(lnum) + '.csv'
     np.savetxt(dir,np.hstack([pdata,sdata]), delimiter=",")
     return dir
 
