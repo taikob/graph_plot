@@ -84,7 +84,7 @@ def plot(data,cnfg,sysparam=None,nump=None):
         if yline is not None: plt.vlines([yline[l]], ylm[0], ylm[1], "black", linewidth=0.7)  # hlines
         if title is not None: plt.title(str(sysparam[2][l]),x=0.5,y=0.9)
         for y in range(len(ynum)):
-            if y==1: gl = '--'
+            if len(ynum)==2 and y==1: gl = '--'
             else: gl = cnfg['gl']
             for yn in range(0, data.shape[1]):
                 if len(ynum)==2:
