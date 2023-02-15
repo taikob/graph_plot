@@ -81,7 +81,7 @@ def plot(data,cnfg,sysparam=None,nump=None):
         graph_paraset(cnfg)
 
         if xline is not None: plt.hlines([xline[l]], xlm[0], xlm[1], "black", linewidth=0.7)  # hlines
-        if yline is not None: plt.vlines([yline[l]], ylm[0], ylm[1], "black", linewidth=0.7)  # hlines
+        if yline is not None and ylm is not None: plt.vlines([yline[l]], ylm[0], ylm[1], "black", linewidth=0.7)  # hlines
         if title is not None: plt.title(str(sysparam[2][l]),x=0.5,y=0.9)
         for y in range(len(ynum)):
             if len(ynum)==2 and y==1: gl = '--'
