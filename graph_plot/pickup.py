@@ -75,15 +75,31 @@ def pickup(data, pk_cnfg):
                 pl.append(list(d)); cnt += 1
 
     #save pickup data
-    if len(pl)==0: pl = np.array([[len(count), cnt]])
-    else: pl = np.array([[len(count), cnt] + [0] * (len(pl[0]) - 2)] + pl)
-    np.savetxt('pickup.csv', pl, delimiter=',')
+    if len(pl)==0: pl = np.array([[len(count), cnt]],dtype='float128')
+    else: pl = np.array([[len(count), cnt] + [0] * (len(pl[0]) - 2)] + pl,dtype='float128')
+
+    pl=pl.tolist()
+    with open('pickup.csv', 'w') as f:
+        writer = csv.writer(f, lineterminator="\n")
+        writer.writerows(pl)
 
     print('number of pickuped learning: ' + str(len(count)) + ', model: ' + str(cnt))
     return pl
 
+def renamenum(rl):
+    num = str(rl[0]).split('e')[0].replace('.','')
+    e = int(str(rl[0]).split('e')[1])
+
+    if len(num) <= e: num+=(len(num) - e+1)*'0'
+
+    if len(num)!=14:
+        rln = num[:14];tmp=num[14:]
+        while len(tmp)>0: rln +='_'+str(int(tmp[:3]));tmp=tmp[3:]
+    else: rln=str(int(rl[0]))
+    return rln
+
 def pickup_image(stmpath, copyfile, pupath):
-    pu = np.loadtxt(pupath,delimiter=',')
+    pu = np.loadtxt(pupath,delimiter=',',dtype='float128')
     pu = pu.tolist()
 
     dir =os.path.dirname(pupath) + '/puimg_'+copyfile.split('.')[0]
@@ -92,10 +108,7 @@ def pickup_image(stmpath, copyfile, pupath):
     if pu == [0,0]: print('there are no pickup model.'); sys.exit()
     del pu[0]
     for rl in pu:
-        if len(str(rl[0]))!=14:
-            rln = str(int(rl[0]))[:14];tmp=str(int(float(rl[0])))[14:]
-            while len(tmp)>0: rln +='_'+str(int(float(tmp[:3])));tmp=tmp[3:]
-        else: rln=str(int(rl[0]))
+        rln = renamenum(rl)
         orname = stmpath + '/' + rln + '/' + str(int(rl[1])) + '.pth/' + copyfile
         cpname = dir + '/' + rln + '_' + str(int(rl[1])) + os.path.splitext(copyfile)[-1]
         shutil.copyfile(orname, cpname)
