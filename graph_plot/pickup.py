@@ -44,8 +44,8 @@ def get_datalist(dl_cnfg,rfr):
                     sys.exit()
 
             #making datalist
-            de = np.array(de)
-            dle = np.empty((de.shape[0], 2+len(rfr[i][j][1])))#dle: data list element
+            de = np.array(de, dtype='float128')
+            dle = np.empty((de.shape[0], 2+len(rfr[i][j][1])), dtype='float128')#dle: data list element
             for k in range(len(rfr[i][j][1])): dle[:,2+k] = de[:,rfr[i][j][1][k]]
             if 'dl' in locals(): dl = np.hstack((dl, dle[:,2:]))
             else:
@@ -56,7 +56,10 @@ def get_datalist(dl_cnfg,rfr):
         else: dla = dl
         del dl
 
-    np.savetxt('datalist.csv',dla, delimiter=",")
+    dla=dla.tolist()
+    with open('datalist.csv', 'w') as f:
+        writer = csv.writer(f, lineterminator="\n")
+        writer.writerows(data)
     return dla
 
 def pickup(data, pk_cnfg):
@@ -91,7 +94,7 @@ def pickup_image(stmpath, copyfile, pupath):
     for rl in pu:
         if len(str(rl[0]))!=14:
             rln = str(int(rl[0]))[:14];tmp=str(int(float(rl[0])))[14:]
-            while len(tmp)>0: rln +='_'+str(int(float(tmp[:2])));tmp=tmp[2:]
+            while len(tmp)>0: rln +='_'+str(int(float(tmp[:3])));tmp=tmp[3:]
         else: rln=str(int(rl[0]))
         orname = stmpath + '/' + rln + '/' + str(int(rl[1])) + '.pth/' + copyfile
         cpname = dir + '/' + rln + '_' + str(int(rl[1])) + os.path.splitext(copyfile)[-1]
