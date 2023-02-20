@@ -59,7 +59,7 @@ def get_datalist(dl_cnfg,rfr):
     dla=dla.tolist()
     with open('datalist.csv', 'w') as f:
         writer = csv.writer(f, lineterminator="\n")
-        writer.writerows(data)
+        writer.writerows(dla)
     return dla
 
 def pickup(data, pk_cnfg):
