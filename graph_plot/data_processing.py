@@ -8,7 +8,7 @@ def datafilter(data, fixparam):
     deldata = []
     for param in fixparam:
         for i in reversed(range(len(newdata))):
-            if float(newdata[i][param[0]])!=float(param[1]):
+            if np.float128(newdata[i][param[0]])!=np.float128(param[1]):
                 deldata.append(newdata[i])
                 del newdata[i]
     deldata.reverse()
