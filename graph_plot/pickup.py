@@ -57,6 +57,7 @@ def get_datalist(dl_cnfg,rfr):
         del dl
 
     dla=dla.tolist()
+    for i in range(len(dla)): dla[i][0]=int(dla[i][0])
     with open('datalist.csv', 'w') as f:
         writer = csv.writer(f, lineterminator="\n")
         writer.writerows(dla)
