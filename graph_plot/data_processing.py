@@ -37,23 +37,23 @@ def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum):
 
     for li, l in enumerate(lpara):
         if lnum is not None:
-            ldata=np.ndarray([0,len(data[0])])
+            ldata=np.ndarray([0,len(data[0])],dtype='float128')
             ldata[:,:]=None
             for d in data:
-                if float(d[lnum])==l: ldata=np.vstack((ldata, d))
+                if np.float128(d[lnum])==l: ldata=np.vstack((ldata, d))
         else: ldata=data
 
         for zi, z in enumerate(zpara):
             if znum is not None:
-                zdata=np.ndarray([0,len(data[0])])
+                zdata=np.ndarray([0,len(data[0])],dtype='float128')
                 zdata[:,:]=None
                 for d in ldata:
-                    if float(d[znum]) == z: zdata=np.vstack((zdata, d))
+                    if np.float128(d[znum]) == z: zdata=np.vstack((zdata, d))
             else: zdata=ldata
 
             for xi, x in enumerate(xpara):
                 for d in zdata:
-                    if float(d[xnum]) == x:
+                    if np.float128(d[xnum]) == x:
                         for y in range(len(ynum)): aldata[xi][zi][li][y] = d[ynum[y]]
 
     return aldata
