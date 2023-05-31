@@ -62,7 +62,6 @@ def format_func(value, tick_number):
     else:
         return f'{value:.2f}'
 
-
 def plot(data,cnfg,sysparam=None,nump=None):
     xline = cnfg['xline']; yline = cnfg['yline']
     hsize = cnfg['hsize']; vsize = cnfg['vsize']
