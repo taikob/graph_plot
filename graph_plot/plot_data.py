@@ -7,6 +7,7 @@ from graph_plot import set_config as sc
 import matplotlib.pyplot as plt
 from data_prcs import get as g
 import numpy as np
+import matplotlib.ticker as mticker
 
 def plot_paraset():
 
@@ -55,6 +56,13 @@ def pickupdata(data,pickuppath,refd):
 
     return pickdata
 
+def format_func(value, tick_number):
+    if value == 0:
+        return '0'
+    else:
+        return f'{value:.2f}'
+
+
 def plot(data,cnfg,sysparam=None,nump=None):
     xline = cnfg['xline']; yline = cnfg['yline']
     hsize = cnfg['hsize']; vsize = cnfg['vsize']
@@ -73,12 +81,17 @@ def plot(data,cnfg,sysparam=None,nump=None):
     plot_paraset()
     fig = plt.figure(figsize=(hsize*xplotnum,vsize*yplotnum))
 
+    formatter = mticker.FuncFormatter(format_func)
+
     if type(xline) != list: xline=[xline]*nump[2]
     if type(yline) != list: yline=[yline]*nump[2]
     for l in range(nump[2]):
         plt.subplot(yplotnum, xplotnum, l+1)
         plt.subplots_adjust(wspace=wspace, hspace=hspace)
         graph_paraset(cnfg)
+
+        ax = plt.gca()
+        ax.yaxis.set_major_formatter(formatter)
 
         if xline is not None: plt.hlines([xline[l]], xlm[0], xlm[1], "black", linewidth=0.7)  # hlines
         if yline is not None and ylm is not None: plt.vlines([yline[l]], ylm[0], ylm[1], "black", linewidth=0.7)  # hlines
