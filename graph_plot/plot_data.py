@@ -55,11 +55,16 @@ def pickupdata(data,pickuppath,refd):
 
     return pickdata
 
-def format_func(value, tick_number):
-    if value == 0:
-        return '0'
-    else:
-        return f'{value:.2f}'
+def format_func_creator(digit):
+    def format_func(value, tick_number):
+        if value == 0:
+            return '0'
+        else:
+            if digit <= 0:
+                return f'{value:.{int(abs(digit))}f}'
+            else:
+                return f'{value:.0f}'
+    return format_func
 
 def plot(data,cnfg,sysparam=None,nump=None):
     xline = cnfg['xline']; yline = cnfg['yline']
@@ -79,7 +84,6 @@ def plot(data,cnfg,sysparam=None,nump=None):
     plot_paraset()
     fig = plt.figure(figsize=(hsize*xplotnum,vsize*yplotnum))
 
-    formatter = mticker.FuncFormatter(format_func)
 
     if type(xline) != list: xline=[xline]*nump[2]
     if type(yline) != list: yline=[yline]*nump[2]
@@ -89,7 +93,12 @@ def plot(data,cnfg,sysparam=None,nump=None):
         graph_paraset(cnfg)
 
         ax = plt.gca()
-        ax.yaxis.set_major_formatter(formatter)
+        digit = np.floor(np.log10((abs(cnfg['ymil']))))
+        formattery = mticker.FuncFormatter(format_func_creator(digit))
+        ax.yaxis.set_major_formatter(formattery)
+        digit = np.floor(np.log10((abs(cnfg['xmil']))))
+        formatterx = mticker.FuncFormatter(format_func_creator(digit))
+        ax.xaxis.set_major_formatter(formatterx)
 
         if xline is not None: plt.hlines([xline[l]], xlm[0], xlm[1], "black", linewidth=0.7)  # hlines
         if yline is not None and ylm is not None: plt.vlines([yline[l]], ylm[0], ylm[1], "black", linewidth=0.7)  # hlines
