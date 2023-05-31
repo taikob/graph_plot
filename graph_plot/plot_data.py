@@ -1,6 +1,5 @@
-import copy
+import copy, sys
 import os, datetime, csv
-import sys
 
 from graph_plot import data_processing as d
 from graph_plot import set_config as sc
