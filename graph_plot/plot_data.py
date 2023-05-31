@@ -96,6 +96,20 @@ def plot(data,cnfg,sysparam=None,nump=None):
         if xline is not None: plt.hlines([xline[l]], xlm[0], xlm[1], "black", linewidth=0.7)  # hlines
         if yline is not None and ylm is not None: plt.vlines([yline[l]], ylm[0], ylm[1], "black", linewidth=0.7)  # hlines
         if title is not None: plt.title(str(sysparam[2][l]),x=0.5,y=0.9)
+
+        #for y in range(len(ynum)):
+        #    if len(ynum)==2 and y==1: gl = '--o'
+        #    else: gl = cnfg['gl']
+        #    for yn in range(0, data.shape[1]):
+        #        if data.shape[1]==2:
+        #            if yn==1: cl='black'; mfc='black'
+        #            elif yn==0: cl='red'; mfc='red'
+        #        else: cl=None
+        #        if len(ynum) == 2 and y == 1 and data.shape[1]==2: mfc = 'white'
+        #        plt.plot(sysparam[0], data[:,yn,l,y], gl, label=str(sysparam[1][yn]), linewidth=lnsize, markersize=mksize,color=cl, markerfacecolor=mfc, markeredgewidth=0.5)
+        #        if pickuppath is not None:
+        #            plt.plot(sysparam[0], pickup[:,yn,l,y], 'o', label=str(sysparam[1][yn]), markersize=float(mksize*1.1), color='red')
+
         for y in range(len(ynum)):
             if len(ynum)==2 and y==1: gl = '--'
             else: gl = cnfg['gl']
