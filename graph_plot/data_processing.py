@@ -59,20 +59,19 @@ def make_graphdata(data,sysparam,nump,xnum,ynum,znum,lnum):
     return aldata
 
 def rangelimit(data, sysparam, nump, xnum, xmin, xmax,ax):
-    sspr = map((lambda x: float(x)), sysparam[xnum])
+    sspr = list(map((lambda x: float(x)), sysparam[xnum]))
 
-    if xmin is not None:
-        for i in reversed(range(len(sspr))):
+    for i in reversed(range(len(sspr))):
+        if xmin is not None:
             if sspr[i] < xmin:
                 nump[xnum]-=1
                 data=np.delete(data, i, ax)
-                del sysparam[xnum][i]
-    if xmax is not None:
-        for i in reversed(range(len(sspr))):
+                sysparam[xnum]=np.delete(sysparam[xnum], i)
+        if xmax is not None:
             if sspr[i] > xmax:
                 nump[xnum]-=1
                 data=np.delete(data, i, ax)
-                del sysparam[xnum][i]
+                sysparam[xnum]=np.delete(sysparam[xnum], i)
 
     return data, sysparam, nump
 
